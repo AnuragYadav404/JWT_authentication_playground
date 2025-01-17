@@ -1,16 +1,14 @@
-console.log("Hey suar. wassup!");
-
-
 const express = require("express");
 const app = express();
 app.use(express.json())
 
 const Users = []
 
+const PORT_NUMBER = 3000
+
 
 const generateToken = function() {
     // Here we have to 32 characters token 
-
     let inputSpace = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5']
 
     token = "";
@@ -21,22 +19,17 @@ const generateToken = function() {
 
         token += inputSpace[randomIndex]
     }
-
     return token
-
 }
 
 app.get(("/"),(req, res) => {
     res.send({
-        message: "fuck you boi"
+        message: "Hello from the root(/)"
     })
 })
 
 
 app.post(("/signup"), (req, res) => {
-    console.log("Recieved a post request for signup", req.body);
-    // here the user gets pushed on to the user's array
-
 
     const username = req.body.username;
     const password = req.body.password;
@@ -55,8 +48,6 @@ app.post(("/signup"), (req, res) => {
 })
 
 app.post(("/signin"), (req, res) => {
-
-    console.log("Recieved a post request for signin")
 
     const username = req.body.username;
     const password = req.body.password;
@@ -93,12 +84,10 @@ app.get("/me", (req, res)=> {
         // Now we retrieve the user according to token
         const userFound = Users.find(u => u.token===token)
         if(userFound) {
-
             res.send({
                 message: userFound
             })
         }else {
-
             res.send({
                 message: "Invalid Request without token"
             })
@@ -110,8 +99,8 @@ app.get("/me", (req, res)=> {
     }
 })
 
-let port_number = 3000
 
-app.listen(3000, (e)=> {
-    console.log(`Server is running bois on : http://localhost:${port_number}`)
+
+app.listen(PORT_NUMBER, (e)=> {
+    console.log(`Server is running bois on : http://localhost:${PORT_NUMBER}`)
 });
