@@ -1,9 +1,11 @@
 const express = require("express");
+const jwt = require("jsonwebtoken")
+
 const app = express();
 app.use(express.json())
 
 const Users = []
-
+const SECRET = "abracadabara"
 const PORT_NUMBER = 3000
 
 
@@ -61,7 +63,9 @@ app.post(("/signin"), (req, res) => {
     }) 
 
     if(userFound){
-        const token = generateToken();
+        const token = jwt.sign({
+            username: userFound.username
+        }, SECRET);
         userFound.token = token;
         res.send({
             message: "Sign in successfull",
@@ -75,31 +79,34 @@ app.post(("/signin"), (req, res) => {
 })
 
 app.get("/me", (req, res)=> {
-
-    // In the protected request, we need to validate the token
-
     const token = req.headers.token;
-
     if(token) { 
         // Now we retrieve the user according to token
-        const userFound = Users.find(u => u.token===token)
-        if(userFound) {
-            res.send({
-                message: userFound
-            })
-        }else {
-            res.send({
-                message: "Invalid Request without token"
-            })
-        }
+        jwt.verify(token, SECRET, function (err, decoded) {
+            if(err) {
+                res.send({
+                    message: "Invalid Request without token"
+                })
+            }else{
+                const userFound = Users.find(u => u.token===token)
+                if(userFound) {
+                    res.send({
+                        message: userFound
+                    })
+                } else {
+                    res.send({
+                        message: "Invalid Request without token"
+                    })
+                }
+            }
+        })
+        
     }else{
         res.send({
             message: "Invalid Request without token"
         })
     }
 })
-
-
 
 app.listen(PORT_NUMBER, (e)=> {
     console.log(`Server is running bois on : http://localhost:${PORT_NUMBER}`)
